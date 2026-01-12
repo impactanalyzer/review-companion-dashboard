@@ -38,8 +38,42 @@ export const TemplateSelectionPage: React.FC = () => {
     useEffect(() => {
         if (!user) {
             navigate('/');
+            return;
         }
-    }, [user, navigate]);
+
+        const fetchExistingTemplate = async () => {
+            // If we already have state passed (e.g. from back button), don't overwrite
+            if (existingSelection && existingSelection.length > 0) return;
+
+            try {
+                // Using a direct fetch here or we could move this to a service
+                // Assuming we use the API_BASE_URL via a helper or direct import
+                const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+                const res = await fetch(`${API_BASE}/api/templates/${user.orgId}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.principles) {
+                        // Map the response to SelectedPrinciple format
+                        const mappedPrinciples: SelectedPrinciple[] = data.principles.map((p: any) => ({
+                            id: p.id || crypto.randomUUID(),
+                            title: p.title,
+                            description: p.description,
+                            source: 'custom' // Treat fetched as custom/existing
+                        }));
+                        setSelectedPrinciples(mappedPrinciples);
+
+                        if (data.tags) {
+                            setCustomTemplateTags(new Set(data.tags));
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error('Failed to fetch existing template', err);
+            }
+        };
+
+        fetchExistingTemplate();
+    }, [user, navigate, existingSelection]);
 
     // --- Actions ---
 
