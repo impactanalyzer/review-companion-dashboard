@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import type { Review, LeadershipPrinciple } from '../types';
 import { ReviewCycleManager } from '../components/ReviewCycleManager';
+import { Header } from '../components/Header';
 
 export const ReviewDashboardPage: React.FC = () => {
     const { user, addReview } = useApp();
@@ -77,97 +78,109 @@ export const ReviewDashboardPage: React.FC = () => {
     if (!user) return null;
 
     return (
-        <div className="container" style={{ padding: '2rem 1rem' }}>
-            <h1 className="page-title">Performance Review</h1>
-            <p style={{ marginBottom: '2rem', color: 'var(--text-secondary)' }}>
-                Reviewing for Organization: <strong>{user.orgName}</strong>
-            </p>
+        <div style={{ paddingBottom: '4rem' }}>
+            <Header />
+            <div className="container" style={{ padding: '2rem 1rem' }}>
+                <h1 className="page-title">Review</h1>
+                <p style={{ marginBottom: '2rem', color: 'var(--text-secondary)' }}>
+                    Reviewing for Organization: <strong>{user.orgName}</strong>
+                </p>
 
-            <ReviewCycleManager />
+                <ReviewCycleManager />
 
-            {user.role === 'admin' ? (
-                <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'flex-end' }}>
-                    <button
-                        onClick={() => navigate('/setup/template')}
-                        className="btn btn-secondary"
-                        style={{ fontSize: '0.9rem' }}
-                    >
-                        ⚙️ Manage Principles
-                    </button>
-                </div>
-            ) : null}
-
-            <div style={{ margin: '3rem 0', borderTop: '1px solid var(--border-color)' }}></div>
-
-            <h2 className="section-title">Submit New Review</h2>
-
-            <form onSubmit={handleSubmit}>
-                <div className="card" style={{ marginBottom: '2rem' }}>
-                    <div className="input-group">
-                        <label className="input-label">Your Name (Reviewer)</label>
-                        <input
-                            type="text"
-                            className="input-field"
-                            value={reviewerName}
-                            onChange={(e) => setReviewerName(e.target.value)}
-                            placeholder="e.g. John Smith"
-                            required
-                        />
+                {user.role === 'admin' || user.role === 'manager' || user.role === 'MANAGER' ? (
+                    <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+                        <button
+                            onClick={() => navigate('/setup/invite')}
+                            className="btn btn-secondary"
+                            style={{ fontSize: '0.9rem' }}
+                        >
+                            👥 Manage Team
+                        </button>
+                        {user.role === 'admin' && (
+                            <button
+                                onClick={() => navigate('/setup/template')}
+                                className="btn btn-secondary"
+                                style={{ fontSize: '0.9rem' }}
+                            >
+                                ⚙️ Principles
+                            </button>
+                        )}
                     </div>
-                </div>
+                ) : null}
 
-                <div style={{ display: 'grid', gap: '2rem' }}>
-                    {principles.map(principle => (
-                        <div key={principle.id} className="card">
-                            <h3 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '0.5rem' }}>{principle.title}</h3>
-                            <p style={{ marginBottom: '1.5rem', color: 'var(--text-secondary)' }}>{principle.description}</p>
+                <div style={{ margin: '3rem 0', borderTop: '1px solid var(--border-color)' }}></div>
 
-                            <div style={{ marginBottom: '1rem' }}>
-                                <label className="input-label">Rating (1-5)</label>
-                                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                    {[1, 2, 3, 4, 5].map(score => (
-                                        <button
-                                            key={score}
-                                            type="button"
-                                            onClick={() => handleRatingChange(principle.id, score)}
-                                            style={{
-                                                width: '40px',
-                                                height: '40px',
-                                                borderRadius: '50%',
-                                                border: '1px solid var(--border-color)',
-                                                backgroundColor: ratings[principle.id]?.score === score ? 'var(--primary-color)' : 'white',
-                                                color: ratings[principle.id]?.score === score ? 'white' : 'var(--text-primary)',
-                                                fontWeight: 'bold',
-                                                cursor: 'pointer',
-                                                transition: 'all 0.2s'
-                                            }}
-                                        >
-                                            {score}
-                                        </button>
-                                    ))}
+                <h2 className="section-title">Submit New Review</h2>
+
+                <form onSubmit={handleSubmit}>
+                    <div className="card" style={{ marginBottom: '2rem' }}>
+                        <div className="input-group">
+                            <label className="input-label">Your Name (Reviewer)</label>
+                            <input
+                                type="text"
+                                className="input-field"
+                                value={reviewerName}
+                                onChange={(e) => setReviewerName(e.target.value)}
+                                placeholder="e.g. John Smith"
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    <div style={{ display: 'grid', gap: '2rem' }}>
+                        {principles.map(principle => (
+                            <div key={principle.id} className="card">
+                                <h3 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '0.5rem' }}>{principle.title}</h3>
+                                <p style={{ marginBottom: '1.5rem', color: 'var(--text-secondary)' }}>{principle.description}</p>
+
+                                <div style={{ marginBottom: '1rem' }}>
+                                    <label className="input-label">Rating (1-5)</label>
+                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                        {[1, 2, 3, 4, 5].map(score => (
+                                            <button
+                                                key={score}
+                                                type="button"
+                                                onClick={() => handleRatingChange(principle.id, score)}
+                                                style={{
+                                                    width: '40px',
+                                                    height: '40px',
+                                                    borderRadius: '50%',
+                                                    border: '1px solid var(--border-color)',
+                                                    backgroundColor: ratings[principle.id]?.score === score ? 'var(--primary-color)' : 'white',
+                                                    color: ratings[principle.id]?.score === score ? 'white' : 'var(--text-primary)',
+                                                    fontWeight: 'bold',
+                                                    cursor: 'pointer',
+                                                    transition: 'all 0.2s'
+                                                }}
+                                            >
+                                                {score}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="input-group" style={{ marginBottom: 0 }}>
+                                    <label className="input-label">Comments / Examples</label>
+                                    <textarea
+                                        className="input-field"
+                                        rows={3}
+                                        value={ratings[principle.id]?.comment || ''}
+                                        onChange={(e) => handleCommentChange(principle.id, e.target.value)}
+                                        placeholder="Share specific examples..."
+                                    />
                                 </div>
                             </div>
+                        ))}
+                    </div>
 
-                            <div className="input-group" style={{ marginBottom: 0 }}>
-                                <label className="input-label">Comments / Examples</label>
-                                <textarea
-                                    className="input-field"
-                                    rows={3}
-                                    value={ratings[principle.id]?.comment || ''}
-                                    onChange={(e) => handleCommentChange(principle.id, e.target.value)}
-                                    placeholder="Share specific examples..."
-                                />
-                            </div>
-                        </div>
-                    ))}
-                </div>
-
-                <div style={{ marginTop: '3rem', display: 'flex', justifyContent: 'flex-end' }}>
-                    <button type="submit" className="btn btn-primary" style={{ fontSize: '1.1rem', padding: '0.75rem 2rem' }}>
-                        Submit Review
-                    </button>
-                </div>
-            </form>
+                    <div style={{ marginTop: '3rem', display: 'flex', justifyContent: 'flex-end' }}>
+                        <button type="submit" className="btn btn-primary" style={{ fontSize: '1.1rem', padding: '0.75rem 2rem' }}>
+                            Submit Review
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     );
 };

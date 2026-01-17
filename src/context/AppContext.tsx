@@ -101,7 +101,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
                 // For prototype, we just "log them in" or redirect to password set.
                 // In real app, we show "Check your email".
                 // Here we might simulate login or store partial state.
-                alert(`User found! Status: ${data.status}. Next Step: ${data.nextStep}`);
+                console.log(`User found! Status: ${data.status}. Next Step: ${data.nextStep}`);
 
                 // MOCK login for demo
                 const userProfile: UserProfile = {
@@ -115,11 +115,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
                 setUser(userProfile);
                 localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(userProfile));
             } else {
-                alert('User not found in Organization');
+                console.warn('User not found in Organization');
+                throw new Error('User not found in Organization');
             }
         } catch (error) {
             console.error('Check access failed', error);
-            alert('Failed to check access.');
+            throw error; // Propagate error so component can handle it if needed
         }
     };
 

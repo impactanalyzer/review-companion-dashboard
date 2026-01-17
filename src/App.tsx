@@ -10,6 +10,7 @@ import { InviteUsersPage } from './pages/InviteUsersPage';
 import { PrincipleCustomizationPage } from './pages/PrincipleCustomizationPage';
 import { ReviewDashboardPage } from './pages/ReviewDashboardPage';
 import { ReviewerLoginPage } from './pages/ReviewerLoginPage';
+import { ManagerDashboardPage } from './pages/ManagerDashboardPage';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
             {/* Reviewer Login is likely redundant with general Login, but keeping for now as it had specific logic */}
             <Route path="/review/login" element={<ReviewerLoginPage />} />
             <Route path="/review/dashboard" element={<ReviewDashboardPage />} />
+            <Route path="/manager/dashboard" element={<ManagerDashboardPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>

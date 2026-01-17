@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { Header } from '../components/Header';
 import type { SelectedPrinciple } from './TemplateSelectionPage';
 import { useApp } from '../context/AppContext';
 import { API_BASE_URL } from '../config';
@@ -25,7 +26,10 @@ export const PrincipleSummaryPage: React.FC = () => {
         // ...
     }
 
+    const [successMessage, setSuccessMessage] = useState('');
+
     const handleSubmit = async (status: 'DRAFT' | 'PUBLISHED') => {
+        setSuccessMessage('');
         // ...
         try {
             const payload = {
@@ -55,78 +59,86 @@ export const PrincipleSummaryPage: React.FC = () => {
             if (status === 'PUBLISHED') {
                 navigate('/setup/invite');
             } else {
-                alert('Draft saved successfully!');
-                // Maybe stay here or go somewhere else
+                setSuccessMessage('Draft saved successfully!');
             }
 
         } catch (error: any) {
             console.error(error);
-            alert(`Error: ${error.message}`);
+            alert(`Error: ${error.message}`); // Keep error alert or move to UI state if strict
         } finally {
             setIsLoading(false);
         }
     };
 
     return (
-        <div className="container" style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem' }}>
-            <h1 className="page-title">Review & Confirm</h1>
-            <p className="page-subtitle">
-                Review the leadership principles you've selected for your team.
-                You can save this as a draft or confirm to start using them immediately.
-            </p>
+        <div style={{ paddingBottom: '4rem' }}>
+            <Header />
+            <div className="container" style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem' }}>
+                <h1 className="page-title">Review & Confirm</h1>
+                <p className="page-subtitle">
+                    Review the leadership principles you've selected for your team.
+                    You can save this as a draft or confirm to start using them immediately.
+                </p>
 
-            {/* Template Name Input */}
-            <div style={{ marginBottom: '2rem' }}>
-                <label className="input-label" htmlFor="templateName">Name this set of principles</label>
-                <input
-                    id="templateName"
-                    className="input-field"
-                    value={finalName}
-                    onChange={(e) => setFinalName(e.target.value)}
-                    placeholder="e.g. Engineering Values 2024"
-                />
-            </div>
-
-            <div className="card-grid" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem' }}>
-                {principles.map((p, idx) => (
-                    <div key={idx} className="card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                        <h3 className="card-title">{p.title}</h3>
-                        <p className="card-description">{p.description}</p>
-                        {p.source === 'custom' && (
-                            <span className="badge" style={{ alignSelf: 'flex-start', background: 'var(--primary-color)', color: 'white' }}>Custom</span>
-                        )}
-                        {/* We could signify if it's from a standard template too */}
+                {successMessage && (
+                    <div style={{ color: '#10b981', marginBottom: '1.5rem', fontWeight: 600, padding: '1rem', backgroundColor: 'rgba(16, 185, 129, 0.1)', borderRadius: 'var(--radius-md)' }}>
+                        {successMessage}
                     </div>
-                ))}
-            </div>
+                )}
 
-            <div style={{ marginTop: '2rem', display: 'flex', gap: '1rem', justifyContent: 'flex-end', borderTop: '1px solid var(--border-color)', paddingTop: '1rem' }}>
-                <button
-                    className="btn btn-secondary"
-                    onClick={() => navigate('/setup/template', {
-                        state: {
-                            existingSelection: principles,
-                            existingTags: tags
-                        }
-                    })}
-                    disabled={isLoading}
-                >
-                    Back to Modify
-                </button>
-                <button
-                    className="btn btn-secondary"
-                    onClick={() => handleSubmit('DRAFT')}
-                    disabled={isLoading}
-                >
-                    Save Draft
-                </button>
-                <button
-                    className="btn btn-primary"
-                    onClick={() => handleSubmit('PUBLISHED')}
-                    disabled={isLoading}
-                >
-                    {isLoading ? 'Saving...' : 'Confirm and Save'}
-                </button>
+                {/* Template Name Input */}
+                <div style={{ marginBottom: '2rem' }}>
+                    <label className="input-label" htmlFor="templateName">Name this set of principles</label>
+                    <input
+                        id="templateName"
+                        className="input-field"
+                        value={finalName}
+                        onChange={(e) => setFinalName(e.target.value)}
+                        placeholder="e.g. Engineering Values 2024"
+                    />
+                </div>
+
+                <div className="card-grid" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem' }}>
+                    {principles.map((p, idx) => (
+                        <div key={idx} className="card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                            <h3 className="card-title">{p.title}</h3>
+                            <p className="card-description">{p.description}</p>
+                            {p.source === 'custom' && (
+                                <span className="badge" style={{ alignSelf: 'flex-start', background: 'var(--primary-color)', color: 'white' }}>Custom</span>
+                            )}
+                            {/* We could signify if it's from a standard template too */}
+                        </div>
+                    ))}
+                </div>
+
+                <div style={{ marginTop: '2rem', display: 'flex', gap: '1rem', justifyContent: 'flex-end', borderTop: '1px solid var(--border-color)', paddingTop: '1rem' }}>
+                    <button
+                        className="btn btn-secondary"
+                        onClick={() => navigate('/setup/template', {
+                            state: {
+                                existingSelection: principles,
+                                existingTags: tags
+                            }
+                        })}
+                        disabled={isLoading}
+                    >
+                        Back to Modify
+                    </button>
+                    <button
+                        className="btn btn-secondary"
+                        onClick={() => handleSubmit('DRAFT')}
+                        disabled={isLoading}
+                    >
+                        Save Draft
+                    </button>
+                    <button
+                        className="btn btn-primary"
+                        onClick={() => handleSubmit('PUBLISHED')}
+                        disabled={isLoading}
+                    >
+                        {isLoading ? 'Saving...' : 'Confirm and Save'}
+                    </button>
+                </div>
             </div>
         </div>
     );

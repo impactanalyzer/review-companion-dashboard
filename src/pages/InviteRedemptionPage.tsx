@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 
 export const InviteRedemptionPage: React.FC = () => {
     const [searchParams] = useSearchParams();
-    const navigate = useNavigate();
+
 
     // State
     const [token, setToken] = useState('');
-    // const [email, setEmail] = useState(''); // Optional, depending on security requirements
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [name, setName] = useState(''); // Added name state
     const [step, setStep] = useState<'TOKEN_ENTRY' | 'SET_PASSWORD'>('TOKEN_ENTRY');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -19,9 +19,6 @@ export const InviteRedemptionPage: React.FC = () => {
         const urlToken = searchParams.get('token');
         if (urlToken) {
             setToken(urlToken);
-            // In a real app, we might verify the token immediately here.
-            // For now, we auto-advance to "Set Password" or wait for user to confirm.
-            // Let's verify it 'visually' by moving to the password step if it looks like a token.
             if (urlToken.length > 5) {
                 setStep('SET_PASSWORD');
             }
@@ -35,13 +32,16 @@ export const InviteRedemptionPage: React.FC = () => {
             setError('Please enter a valid invitation token.');
             return;
         }
-        // Mock Verification
+        // Mock Verification or fetch from API if we wanted to pre-validate
         setIsLoading(true);
         setTimeout(() => {
             setIsLoading(false);
             setStep('SET_PASSWORD');
-        }, 800);
+        }, 500);
     };
+
+    // State for success message
+    const [successMessage, setSuccessMessage] = useState('');
 
     const handleSetPassword = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -57,20 +57,44 @@ export const InviteRedemptionPage: React.FC = () => {
             return;
         }
 
+        if (!name.trim()) {
+            setError('Please enter your name.');
+            return;
+        }
+
         setIsLoading(true);
         try {
-            // TODO: Call API to set password using token
-            // await api.setPassword(token, password);
-            console.log('Setting password for token:', token, 'Password:', password);
+            const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+            const res = await fetch(`${API_BASE}/api/auth/invite/accept`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token, password, name })
+            });
 
-            // Mock Success Delay
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            const data = await res.json();
 
-            alert('Password set successfully! Logging you in...');
-            navigate('/review/dashboard'); // Or login page
-        } catch (err) {
+            if (!res.ok) {
+                throw new Error(data.error || 'Failed to redeem invitation');
+            }
+
+            console.log('Invite accepted:', data);
+
+            if (data.token && data.user) {
+                // Auto Login
+                localStorage.setItem('AUTH_TOKEN', data.token);
+                localStorage.setItem('USER_DATA', JSON.stringify(data.user));
+
+                setSuccessMessage('Account created successfully! Redirecting you to dashboard...');
+
+                // Delay redirect
+                setTimeout(() => {
+                    window.location.href = '/review/dashboard';
+                }, 1500);
+            }
+
+        } catch (err: any) {
             console.error(err);
-            setError('Failed to set password. Link may be expired.');
+            setError(err.message || 'Failed to set password. Link may be expired.');
         } finally {
             setIsLoading(false);
         }
@@ -84,6 +108,7 @@ export const InviteRedemptionPage: React.FC = () => {
                 </h1>
 
                 {error && <div style={{ color: 'red', marginBottom: '1rem', textAlign: 'center', fontSize: '0.875rem' }}>{error}</div>}
+                {successMessage && <div style={{ color: '#10b981', marginBottom: '1rem', textAlign: 'center', fontWeight: 600 }}>{successMessage}</div>}
 
                 {step === 'TOKEN_ENTRY' ? (
                     <form onSubmit={handleVerifyToken}>
@@ -114,11 +139,25 @@ export const InviteRedemptionPage: React.FC = () => {
                 ) : (
                     <form onSubmit={handleSetPassword}>
                         <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', textAlign: 'center' }}>
-                            Welcome! Please set a secure password to access your account.
+                            Welcome! Please confirm your name and set a secure password to access your account.
                         </p>
 
                         {/* Hidden token field for accessibility/form context if needed */}
                         <input type="hidden" name="token" value={token} />
+
+                        {/* Name Field (New) */}
+                        <div className="input-group">
+                            <label className="input-label" htmlFor="name">Full Name</label>
+                            <input
+                                id="name"
+                                type="text"
+                                className="input-field"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                placeholder="Your Name"
+                                required
+                            />
+                        </div>
 
                         <div className="input-group">
                             <label className="input-label" htmlFor="password">New Password</label>
@@ -130,7 +169,6 @@ export const InviteRedemptionPage: React.FC = () => {
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="Enter password"
                                 required
-                                autoFocus
                             />
                         </div>
                         <div className="input-group">
