@@ -47,10 +47,9 @@ export const LoginPage: React.FC = () => {
                 setUser(userProfile);
 
                 // Redirect based on role
-                if (userProfile.role === 'admin') {
-                    // Default to Invite/Manage page for admins as requested
-                    navigate('/setup/invite');
-                } else if (userProfile.role === 'manager') {
+                if (userProfile.role === 'admin' || userProfile.role === 'ADMIN') {
+                    navigate('/admin/dashboard');
+                } else if (userProfile.role === 'manager' || userProfile.role === 'MANAGER') {
                     navigate('/manager/dashboard');
                 } else {
                     navigate('/review/dashboard');

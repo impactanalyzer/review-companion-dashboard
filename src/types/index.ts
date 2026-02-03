@@ -27,7 +27,7 @@ export interface UserProfile {
   id: string;
   name: string;
   email: string;
-  role: 'admin' | 'user'; // 'admin' is the one setting up, 'user' is a reviewer
+  role: 'admin' | 'user' | 'manager' | 'MANAGER' | 'ADMIN' | 'EMPLOYEE'; // 'admin' is the one setting up, 'user' is a reviewer, manager manages team
   customer?: {
     id: string;
     name: string;
@@ -35,6 +35,7 @@ export interface UserProfile {
   // Legacy fields below, verify usage
   orgId?: string;
   orgName?: string;
+  managerId?: string; // Links to manager
   selectedTemplateId?: string;
   customizedPrinciples: LeadershipPrinciple[]; // User can edit these after selection
 }

@@ -103,17 +103,24 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
                 // Here we might simulate login or store partial state.
                 console.log(`User found! Status: ${data.status}. Next Step: ${data.nextStep}`);
 
-                // MOCK login for demo
-                const userProfile: UserProfile = {
-                    id: 'temp-reviewer-id',
-                    name: email.split('@')[0],
-                    email: email,
-                    role: 'user',
-                    customizedPrinciples: [],
-                    orgName: orgName
-                };
-                setUser(userProfile);
-                localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(userProfile));
+                // MTE: Use real user data returned from check-access
+                if (data.user) {
+                    const userProfile: UserProfile = {
+                        id: data.user.id,
+                        name: data.user.name || email.split('@')[0],
+                        email: data.user.email,
+                        role: data.user.role,
+                        customizedPrinciples: [],
+                        orgName: orgName,
+                        orgId: data.user.customerId,
+                        managerId: data.user.managerId
+                    };
+                    setUser(userProfile);
+                    localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(userProfile));
+                } else {
+                    // Fallback should not happen if exists=true and status=ACTIVE
+                    console.warn('User exists but no data returned from check-access');
+                }
             } else {
                 console.warn('User not found in Organization');
                 throw new Error('User not found in Organization');

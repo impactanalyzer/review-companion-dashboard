@@ -11,6 +11,9 @@ import { PrincipleCustomizationPage } from './pages/PrincipleCustomizationPage';
 import { ReviewDashboardPage } from './pages/ReviewDashboardPage';
 import { ReviewerLoginPage } from './pages/ReviewerLoginPage';
 import { ManagerDashboardPage } from './pages/ManagerDashboardPage';
+import { ManagerAssessmentPage } from './pages/ManagerAssessmentPage';
+import { AdminDashboardPage } from './pages/AdminDashboardPage';
+import { AdminCycleDetailsPage } from './pages/AdminCycleDetailsPage';
 
 function App() {
   return (
@@ -29,6 +32,9 @@ function App() {
             <Route path="/review/login" element={<ReviewerLoginPage />} />
             <Route path="/review/dashboard" element={<ReviewDashboardPage />} />
             <Route path="/manager/dashboard" element={<ManagerDashboardPage />} />
+            <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
+            <Route path="/admin/cycle/:cycleId" element={<AdminCycleDetailsPage />} />
+            <Route path="/manager/assessment/:requestId" element={<ManagerAssessmentPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>

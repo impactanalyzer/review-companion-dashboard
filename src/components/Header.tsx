@@ -53,12 +53,16 @@ export const Header: React.FC = () => {
         }}>
             <div
                 style={{ fontWeight: 700, fontSize: '1.2rem', color: 'var(--primary-color)', cursor: 'pointer' }}
-                onClick={() => navigate(user?.role === 'admin' || user?.role === 'manager' ? '/manager/dashboard' : '/review/dashboard')}
+                onClick={() => {
+                    if (user?.role === 'admin' || user?.role === 'ADMIN') navigate('/admin/dashboard');
+                    else if (user?.role === 'manager' || user?.role === 'MANAGER') navigate('/manager/dashboard');
+                    else navigate('/review/dashboard');
+                }}
             >
                 Review Companion
             </div>
             <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                {(user?.role === 'admin') && (
+                {(user?.role === 'admin' || user?.role === 'ADMIN') && (
                     <>
                         <button
                             onClick={() => navigate('/setup/template')}
@@ -73,8 +77,8 @@ export const Header: React.FC = () => {
                             👥 Team
                         </button>
                         <button
-                            onClick={() => navigate('/manager/dashboard')}
-                            style={getButtonStyle('/manager/dashboard')}
+                            onClick={() => navigate('/admin/dashboard')}
+                            style={getButtonStyle('/admin/dashboard')}
                         >
                             📊 Dashboard
                         </button>
