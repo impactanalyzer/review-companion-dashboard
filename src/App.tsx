@@ -11,6 +11,7 @@ import { PrincipleCustomizationPage } from './pages/PrincipleCustomizationPage';
 import { ReviewDashboardPage } from './pages/ReviewDashboardPage';
 import { ReviewerLoginPage } from './pages/ReviewerLoginPage';
 import { ManagerDashboardPage } from './pages/ManagerDashboardPage';
+import { ManagerCockpitPage } from './pages/ManagerCockpitPage';
 import { ManagerAssessmentPage } from './pages/ManagerAssessmentPage';
 import { AdminDashboardPage } from './pages/AdminDashboardPage';
 import { AdminCycleDetailsPage } from './pages/AdminCycleDetailsPage';
@@ -32,6 +33,7 @@ function App() {
             <Route path="/review/login" element={<ReviewerLoginPage />} />
             <Route path="/review/dashboard" element={<ReviewDashboardPage />} />
             <Route path="/manager/dashboard" element={<ManagerDashboardPage />} />
+            <Route path="/manager/cockpit" element={<ManagerCockpitPage />} />
             <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
             <Route path="/admin/cycle/:cycleId" element={<AdminCycleDetailsPage />} />
             <Route path="/manager/assessment/:requestId" element={<ManagerAssessmentPage />} />

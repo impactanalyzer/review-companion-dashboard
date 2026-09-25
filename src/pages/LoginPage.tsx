@@ -39,12 +39,17 @@ export const LoginPage: React.FC = () => {
                 const backendUser = data.user;
                 // Map backend response to Frontend UserProfile
                 const userProfile = {
-                    ...backendUser,
+                    id: backendUser.id,
+                    name: backendUser.name || backendUser.email.split('@')[0],
+                    email: backendUser.email,
                     role: backendUser.role.toLowerCase(), // Normalize ADMIN -> admin
                     orgId: backendUser.customer?.id,
-                    orgName: backendUser.customer?.name
+                    orgName: backendUser.customer?.name,
+                    managerId: backendUser.managerId,
+                    customizedPrinciples: [],
                 };
                 setUser(userProfile);
+                localStorage.setItem('review_companion_user', JSON.stringify(userProfile));
 
                 // Redirect based on role
                 if (userProfile.role === 'admin' || userProfile.role === 'ADMIN') {

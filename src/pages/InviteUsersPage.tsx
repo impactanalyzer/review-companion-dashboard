@@ -345,7 +345,7 @@ export const InviteUsersPage: React.FC = () => {
                             >
                                 <option value="ALL">All Roles</option>
                                 <option value="MANAGER">Managers</option>
-                                <option value="EMPLOYEE">Employees</option>
+                                <option value="EMPLOYEE">Individual Contributors</option>
                                 <option value="ADMIN">Admins</option>
                             </select>
                         </div>

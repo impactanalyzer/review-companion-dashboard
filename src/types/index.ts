@@ -40,6 +40,55 @@ export interface UserProfile {
   customizedPrinciples: LeadershipPrinciple[]; // User can edit these after selection
 }
 
+export interface CollaborationSummary {
+  prsOfYoursTheyReviewed: number;
+  prsOfTheirsYouReviewed: number;
+  reviewDiscussions: number;
+}
+
+export interface ArtifactReference {
+  type: string;
+  url: string;
+  title: string;
+  whyShort: string;
+}
+
+export interface ReviewerRecommendation {
+  reviewer: { id: string; name: string };
+  reason: string;
+  narrative: string;
+  domains: string[];
+  lastCollaboratedAt: string;
+  collaborationSummary: CollaborationSummary;
+  artifactReferences: ArtifactReference[];
+}
+
+export interface ReviewContextTheme {
+  name: string;
+  guidance: string;
+  artifactIds: string[];
+}
+
+export interface ReviewContextArtifact {
+  id: string;
+  type: string;
+  url: string;
+  title: string;
+  domain: string;
+  direction: string;
+  mergedAt: string;
+  summary: string;
+  whyShort: string;
+}
+
+export interface ReviewContext {
+  target: { id: string; name: string };
+  recommendationNarrative: string;
+  collaborationSummary: CollaborationSummary;
+  themes: ReviewContextTheme[];
+  artifactReferences: ReviewContextArtifact[];
+}
+
 export interface Review {
   id: string;
   targetUserId: string;

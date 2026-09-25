@@ -5,6 +5,7 @@ import { SideContextLayout } from '../layouts/SideContextLayout';
 import { Header } from '../components/Header';
 import type { LeadershipPrinciple } from '../types';
 import { API_BASE_URL } from '../config';
+import { ProfilePanel, type ProfileViewModel } from '../components/ProfileWidgets';
 
 export const ManagerAssessmentPage: React.FC = () => {
     const { requestId } = useParams();
@@ -24,6 +25,11 @@ export const ManagerAssessmentPage: React.FC = () => {
     const [employeeRequest, setEmployeeRequest] = useState<any | null>(null);
     const [peerFeedbacks, setPeerFeedbacks] = useState<any[]>([]);
     const [notification, setNotification] = useState<{ message: string, type: 'success' | 'error' } | null>(null);
+
+    // AI Metrics State
+    const [profile, setProfile] = useState<ProfileViewModel | null>(null);
+    const [aiLoading, setAiLoading] = useState(false);
+    const [aiError, setAiError] = useState<string | null>(null);
 
     // Resizing Logic for Vertical Split
     const [topSectionHeight, setTopSectionHeight] = useState(50); // Percentage
@@ -124,6 +130,23 @@ export const ManagerAssessmentPage: React.FC = () => {
                             setPeerFeedbacks(peers);
                         })
                         .catch(e => console.error('Failed to fetch employee requests', e));
+
+                    // 3. Fetch engine profile (archetype / strengths / growth / domains)
+                    setAiLoading(true);
+                    fetch(`${API_BASE_URL}/api/users/${data.targetId}/profile`)
+                        .then(r => r.json())
+                        .then(p => {
+                            if (p && !p.error) {
+                                setProfile(p as ProfileViewModel);
+                            } else {
+                                setAiError(p?.error || 'No profile available for this person/period');
+                            }
+                        })
+                        .catch(e => {
+                            console.error('Failed to fetch profile', e);
+                            setAiError('Network error loading profile');
+                        })
+                        .finally(() => setAiLoading(false));
                 }
             })
             .catch(err => console.error(err));
@@ -179,29 +202,14 @@ export const ManagerAssessmentPage: React.FC = () => {
 
     if (!request) return <div>Loading...</div>;
 
-    // Mock Interactions Content
+    // Engine profile (screen 1 left panel): archetype, strengths, growth, domains, badges.
     const interactionsContent = (
-        <div>
-            <h3 style={{ fontSize: '1rem', marginBottom: '1rem', color: 'var(--text-secondary)' }}>
-                AI Metrics for {request?.target?.name || 'Employee'}
-            </h3>
-            <div style={{ display: 'grid', gap: '1rem' }}>
-                <div className="card" style={{ padding: '1rem', fontSize: '0.9rem' }}>
-                    <strong>Project Alpha Launch</strong>
-                    <p style={{ margin: '0.5rem 0 0 0', color: 'var(--text-secondary)' }}>
-                        Collaborated on the backend API design. Proactive communication.
-                    </p>
-                    <div style={{ marginTop: '0.5rem', fontSize: '0.8rem', color: '#999' }}>Sep 12, 2025</div>
-                </div>
-                <div className="card" style={{ padding: '1rem', fontSize: '0.9rem' }}>
-                    <strong>Q3 Planning</strong>
-                    <p style={{ margin: '0.5rem 0 0 0', color: 'var(--text-secondary)' }}>
-                        Led the planning session effectively. Good detailed notes.
-                    </p>
-                    <div style={{ marginTop: '0.5rem', fontSize: '0.8rem', color: '#999' }}>Aug 15, 2025</div>
-                </div>
-            </div>
-        </div>
+        <ProfilePanel
+            profile={profile}
+            displayName={request?.target?.name || 'Employee'}
+            loading={aiLoading}
+            error={aiError}
+        />
     );
 
     // Peer Feedback Content

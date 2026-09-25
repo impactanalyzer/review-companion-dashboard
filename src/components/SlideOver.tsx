@@ -5,9 +5,10 @@ interface SlideOverProps {
     onClose: () => void;
     title: string;
     children: React.ReactNode;
+    maxWidth?: string; // Panel width on larger screens (defaults to 400px)
 }
 
-export const SlideOver: React.FC<SlideOverProps> = ({ isOpen, onClose, title, children }) => {
+export const SlideOver: React.FC<SlideOverProps> = ({ isOpen, onClose, title, children, maxWidth = '400px' }) => {
     const panelRef = useRef<HTMLDivElement>(null);
 
     // Close on Escape key
@@ -63,7 +64,7 @@ export const SlideOver: React.FC<SlideOverProps> = ({ isOpen, onClose, title, ch
                     right: 0,
                     bottom: 0,
                     width: '100%',
-                    maxWidth: '400px',
+                    maxWidth,
                     backgroundColor: 'white',
                     boxShadow: '-4px 0 15px rgba(0,0,0,0.1)',
                     transform: isOpen ? 'translateX(0)' : 'translateX(100%)',

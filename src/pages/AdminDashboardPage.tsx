@@ -185,7 +185,7 @@ export const AdminDashboardPage: React.FC = () => {
             });
 
             if (res.ok) {
-                const data = await res.json();
+                await res.json(); // Consume but don't assign to `data`
                 setNotification({ message: `Cycle "${cycleName}" started! Created reviews.`, type: 'success' });
                 setIsModalOpen(false);
                 // Refresh cycles

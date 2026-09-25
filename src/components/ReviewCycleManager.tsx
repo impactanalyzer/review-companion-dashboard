@@ -64,7 +64,7 @@ export const ReviewCycleManager: React.FC<ReviewCycleManagerProps> = ({ onStartR
     // Filter requests based on Active Tab logic
     const filteredRequests = React.useMemo(() => {
         return requests.filter(req => {
-            const isSelf = req.reviewer.email === user?.email || req.reviewerId === user?.id;
+            const isSelf = req.reviewer.email === user?.email || (req as any).reviewerId === user?.id;
             const isPendingStatus = ['PENDING', 'IN_PROGRESS', 'RE_REVIEW'].includes(req.status);
 
             if (activeTab === 'PENDING') {

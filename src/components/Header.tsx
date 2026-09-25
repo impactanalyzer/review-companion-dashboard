@@ -90,7 +90,13 @@ export const Header: React.FC = () => {
                             onClick={() => navigate('/manager/dashboard')}
                             style={getButtonStyle('/manager/dashboard')}
                         >
-                            📊 Dashboard
+                            📊 Review Dashboard
+                        </button>
+                        <button
+                            onClick={() => navigate('/manager/cockpit')}
+                            style={getButtonStyle('/manager/cockpit')}
+                        >
+                            🎯 Cockpit
                         </button>
                         <button
                             onClick={() => navigate('/setup/invite')}
